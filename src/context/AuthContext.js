@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setIsLoading(true);
       const res = await axios.post(
-        `http://192.168.11.118:3000/api/login`,
+        `https://node.appcorezulia.lat/api/login`,
         data,
         {
           headers: {
@@ -44,11 +44,21 @@ export const AuthProvider = ({ children }) => {
           },
         }
       );
-      let userInfo = res.data;
+      const userInfo = res.data;
+      const timeExpires = new Date(userInfo.timeExpires); // Convertir el string en un objeto Date
+      const today = new Date();
+      const timeDifference = today.getTime() - timeExpires.getTime();
+      const daysDifference = Math.floor(timeDifference / (1000 * 3600 * 24));
+
+      if (daysDifference >= 180 && userInfo.role < 2) {
+        setIsLoading(false);
+        return "Tu contraseña ha expirado. Por favor, solicita la recuperación de contraseña.";
+      }
       setUserInfo(userInfo);
       AsyncStorage.setItem("userInfo", JSON.stringify(userInfo));
       setIsLoading(false);
     } catch (error) {
+      console.log(error.response.data);
       setIsLoading(false);
       return "Usuario o contraseña incorrecta.";
     }
@@ -59,7 +69,7 @@ export const AuthProvider = ({ children }) => {
     try {
       AsyncStorage.removeItem("userInfo");
       setUserInfo({});
-      Alert.alert("Sesión finalizada.", "", [{ text: "OK" }]);
+      Alert.alert("SESIÓN FINALIZADA.", "", [{ text: "OK" }]);
       setIsLoading(false);
     } catch (e) {
       console.log(`logout error ${e}`);
@@ -76,7 +86,7 @@ export const AuthProvider = ({ children }) => {
 
       if (userInfo) {
         const response = await axios.post(
-          `http://192.168.11.118:3000/api/verify-token/check`,
+          `https://node.appcorezulia.lat/api/verify-token/check`,
           {},
           {
             headers: {

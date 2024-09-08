@@ -8,6 +8,7 @@ const CustomInput = ({
   rules = {},
   placeholder,
   secureTextEntry,
+  enabled = true,
 }) => {
   return (
     <Controller
@@ -28,6 +29,7 @@ const CustomInput = ({
               placeholder={placeholder}
               style={styles.input}
               secureTextEntry={secureTextEntry}
+              editable={enabled}
             />
           </View>
           {error && (

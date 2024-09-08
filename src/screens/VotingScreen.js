@@ -19,12 +19,12 @@ const VotingScreen = () => {
   const { votingId } = route.params;
   const [data, setData] = useState([]);
   const { userInfo, logout } = useContext(AuthContext);
-  const [timeLeft, setTimeLeft] = useState(30); // Tiempo en segundos (30 minutos)
+  const [timeLeft, setTimeLeft] = useState(60);
 
   const fetchData = async () => {
     try {
       const res = await axios.get(
-        `http://192.168.11.118:3000/api/election/${votingId}`,
+        `https://node.appcorezulia.lat/api/election/${votingId}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -32,10 +32,11 @@ const VotingScreen = () => {
           },
         }
       );
-      console.log("ESTA ES LA DATA: ", res.data.title);
+      //console.log("ESTA ES LA DATA: ", res.data.title);
       setData(res.data);
     } catch (error) {
-      logout();
+      Alert.alert("Error", "Ocurrió un error al carga de la elección.");
+      navigation.goBack();
     }
   };
 
@@ -50,14 +51,14 @@ const VotingScreen = () => {
 
   useEffect(() => {
     if (timeLeft === 0) {
-      handleCandidatePress(null);
+      handleCandidatePress(0);
     }
   }, [timeLeft]);
 
-  const handleCandidatePress = async (cadidateid) => {
+  const handleCandidatePress = async (cadidateid, item = false) => {
     try {
       const response = await axios.post(
-        "http://192.168.11.118:3000/api/vote/create",
+        `https://node.appcorezulia.lat/api/vote/`,
         {
           candidateId: cadidateid,
           electionId: votingId,
@@ -69,21 +70,14 @@ const VotingScreen = () => {
           },
         }
       );
-      if (!cadidateid) {
-        Alert.alert("Su voto se considera nulo.", "Tiempo de espera agotado.", [
-          { text: "OK" },
-        ]);
-      } else {
-        Alert.alert("Su voto se ha registrado exitosamente.", "", [
-          { text: "OK" },
-        ]);
-      }
-      navigation.navigate("ELECCIONES");
+      navigation.replace("RegisteredVoteScreen", { candidate: item, votingId });
     } catch (error) {
-      console.log(error);
-      logout();
+      console.log(error.response.data);
+      Alert.alert("Error", "Ocurrió un error al enviar el voto.");
+      navigation.goBack();
     }
   };
+
   useEffect(() => {
     const backAction = () => {
       Alert.alert("¿Seguro que quieres salir?", "Su voto se anulará!", [
@@ -92,7 +86,7 @@ const VotingScreen = () => {
           onPress: () => null,
           style: "cancel",
         },
-        { text: "SI", onPress: () => handleCandidatePress(null) },
+        { text: "SI", onPress: () => handleCandidatePress(0) },
       ]);
       return true;
     };
@@ -107,18 +101,17 @@ const VotingScreen = () => {
 
   const renderCandidateItem = ({ item }) => (
     <TouchableOpacity
-      onPress={() => handleCandidatePress(item.id)}
+      onPress={() => handleCandidatePress(item.id, item)}
       style={styles.CandidateItem}
     >
-      <View style={styles.partyImageContainer}>
-        <Image source={{ uri: item.partyImage }} style={styles.partyImage} />
-      </View>
       <View style={styles.imageContainer}>
-        <Image source={{ uri: item.image }} style={styles.candidateImage} />
+        <Image
+          source={item.image ? { uri: item.image } : null}
+          style={styles.candidateImage}
+        />
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.candidateName}>{item.name}</Text>
-        <Text style={styles.candidateParty}>{item.party}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -129,6 +122,9 @@ const VotingScreen = () => {
         <Text style={styles.title}>{data.title}</Text>
         <Text style={styles.description}>{data.description}</Text>
         <Text style={styles.timeLeft}>Tiempo restante: {timeLeft}</Text>
+        <Text style={styles.candidateName}>
+        Por favor, seleccione tocando una de las Opciones Candidatas:
+        </Text>
       </View>
       <View style={styles.contentContainer}>
         <FlatList

@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet, Pressable} from 'react-native';
+import {Text, StyleSheet, Pressable} from 'react-native';
 
 const CustomButton = ({onPress, text, type = 'PRIMARY', bgColor, fgColor}) => {
   return (
@@ -16,7 +16,7 @@ const CustomButton = ({onPress, text, type = 'PRIMARY', bgColor, fgColor}) => {
           styles[`text_${type}`],
           fgColor ? {color: fgColor} : {},
         ]}>
-        {text}
+        {text.toUpperCase()}
       </Text>
     </Pressable>
   );
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
 
-    padding: 15,
+    padding: 10,
     marginVertical: 5,
 
     alignItems: 'center',

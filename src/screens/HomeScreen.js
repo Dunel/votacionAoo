@@ -11,9 +11,12 @@ const HomeScreen = () => {
 
   const fetchElections = async () => {
     try {
+      //console.log(userInfo.token);
       setIsLoading(true);
       const response = await axios.get(
-        "http://192.168.11.118:3000/api/election",
+        userInfo.role == 2
+          ? `https://node.appcorezulia.lat/api/election/admin`
+          : `https://node.appcorezulia.lat/api/election`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -21,12 +24,10 @@ const HomeScreen = () => {
           },
         }
       );
-      console.log("cargando elecciones")
       setElections(response.data);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
-      logout();
     }
   };
 
@@ -34,18 +35,35 @@ const HomeScreen = () => {
     const userVoted =
       item.votes &&
       item.votes.some((vote) => vote.userCedula == userInfo.cedula);
+    const active = item.active == "active" ? true : false;
+    const resultActive = new Date(item.endDate) < new Date();
     return (
       <View style={styles.electionItem}>
-        <Text style={styles.electionTitle}>{item.title}</Text>
+        <View style={styles.electionTitleContainer}>
+          <Text style={styles.electionTitle}>{item.title}</Text>
+          <Text style={styles.checkmark}>✅</Text>
+        </View>
         <Text>{item.description}</Text>
         <Text>Inicio: {new Date(item.startDate).toLocaleDateString()}</Text>
         <Text>Fin: {new Date(item.endDate).toLocaleDateString()}</Text>
-        <Button
-          title="IR A LA VOTACIÓN"
-          color="blue"
-          disabled={!item.active || userVoted || !item.active}
-          onPress={() => navigation.navigate("VOTACION", { votingId: item.id })}
-        />
+        {resultActive ? (
+          <Button
+            title="Ver resultados"
+            color="brown"
+            onPress={() =>
+              navigation.navigate("ElectionResultsScreen", { election: item.id })
+            }
+          />
+        ) : (
+          <Button
+            title="IR A LA VOTACIÓN"
+            color="blue"
+            disabled={!active || userVoted || !active}
+            onPress={() =>
+              navigation.navigate("VotingScreen", { votingId: item.id })
+            }
+          />
+        )}
       </View>
     );
   };
@@ -59,12 +77,11 @@ const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.userInfoContainer}>
-        <Text style={styles.userInfoText}>Cedula: {userInfo.cedula}</Text>
         <Text style={styles.userInfoText}>
-          Nombre: {userInfo.nombre.toUpperCase()}
+          Cédula de identidad: {userInfo.cedula}
         </Text>
         <Text style={styles.userInfoText}>
-          Apellido: {userInfo.apellido.toUpperCase()}
+          Nombre Completo: {userInfo.fullname.toUpperCase()}
         </Text>
       </View>
       <View style={styles.contentContainer}>
@@ -80,7 +97,7 @@ const HomeScreen = () => {
           <Button
             title="Administración"
             color="#FCBE17"
-            onPress={() => navigation.navigate("ADMINISTRACION")}
+            onPress={() => navigation.navigate("AdminScreen")}
           />
         )}
         <Button title="Cerrar Sesión" color="red" onPress={logout} />
@@ -125,6 +142,11 @@ const styles = StyleSheet.create({
     padding: 10,
     marginVertical: 5,
     width: "100%",
+  },
+  electionTitleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   electionTitle: {
     fontWeight: "bold",

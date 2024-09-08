@@ -8,54 +8,64 @@ const AdminScreen = () => {
   const { userInfo, setIsLoading, logout } = useContext(AuthContext);
 
   const handleRegistrarVotante = () => {
-    navigation.navigate("REGISTRO DE VOTANTE");
+    navigation.navigate("RegisterVoterScreen");
   };
 
   const handleActualizarVotante = () => {
-    navigation.navigate("ACTUALIZACION DE VOTANTE");
+    navigation.navigate("ModifyVoterScreen");
+  };
+
+  const handleElectionsResults = () => {
+    //VER RESULTADOS
+    navigation.navigate("ElectionResultsAdminScreen");
   };
 
   const handleRegistrarEleccion = () => {
-    navigation.navigate("REGISTRO DE ELECCION");
+    navigation.navigate("RegisterElectionScreen");
   };
 
   const handleModificarEleccion = () => {
-    navigation.navigate("ACTUALIZACION DE ELECCION");
-  };
-
-  const handleAgregarCandidato = () => {
-    alert("Pronto")
-  };
-
-  const handleModificarCandidato = () => {
-    alert("Pronto")
+    navigation.navigate("UpdateElectionScreen");
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Menú de Administración</Text>
       <View style={styles.optionsContainer}>
+        <Text style={styles.title}>Menú de Votantes</Text>
         <View style={styles.option}>
           <Button title="Registrar Votante" onPress={handleRegistrarVotante} />
         </View>
         <View style={styles.option}>
-          <Button title="Actualizar Votante" onPress={handleActualizarVotante} />
+          <Button title="Modificar Votante" onPress={handleActualizarVotante} />
+        </View>
+
+        <Text style={styles.title}>Menú de Elecciones</Text>
+        <View style={styles.option}>
+          <Button
+            title="Registrar Elección"
+            onPress={handleRegistrarEleccion}
+          />
         </View>
         <View style={styles.option}>
-          <Button title="Registrar Elección" onPress={handleRegistrarEleccion} />
+          <Button
+            title="Modificar Elección"
+            onPress={handleModificarEleccion}
+          />
         </View>
         <View style={styles.option}>
-          <Button title="Modificar Elección" onPress={handleModificarEleccion} />
-        </View>
-        <View style={styles.option}>
-          <Button title="Agregar Candidato" onPress={handleAgregarCandidato} />
-        </View>
-        <View style={styles.option}>
-          <Button title="Modificar Candidato" onPress={handleModificarCandidato} />
+          <Button
+            title="Ver elecciones en tiempo real"
+            onPress={handleElectionsResults}
+          />
         </View>
       </View>
-      <View style={styles.bottomButtons}>
-        <Button title="Ir atrás" color="#FCBE17" onPress={() => navigation.goBack()} />
+
+      <View style={styles.buttonContainer}>
+        <Button
+          title="atrás"
+          color="#FCBE17"
+          onPress={() => navigation.goBack()}
+        />
         <Button title="Cerrar Sesión" color="red" onPress={logout} />
       </View>
     </View>
@@ -67,23 +77,21 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    backgroundColor: "#f0f0f0",
-    padding: 20,
+    padding: 10,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 10,
+    textAlign: 'center'
   },
   optionsContainer: {
     flex: 1,
-    justifyContent: "flex-start",
   },
   option: {
     marginBottom: 10,
   },
-  bottomButtons: {
-    marginTop: 20,
+  buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",

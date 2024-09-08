@@ -2,9 +2,8 @@ import React, { useContext, useState } from "react";
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
+  Image,
 } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import Spinner from "react-native-loading-spinner-overlay";
@@ -12,6 +11,7 @@ import { useForm } from "react-hook-form";
 import CustomInput from "../components/customInput";
 import CustomButton from "../components/customButton";
 import CustomSelect from "../components/customSelect";
+import { Link } from "@react-navigation/native";
 
 const cedulaRegex = /^[0-9]+$/;
 
@@ -23,21 +23,23 @@ const LoginScreen = () => {
   const onSubmit = async (data) => {
     try {
       const response = await login(data);
-      console.log(response);
-      if(response){
-        setError(response)
+      if (response) {
+        setError(response);
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   return (
     <View style={styles.container}>
       <Spinner visible={isLoading} />
+      <Image
+        style={styles.logo}
+        source={require("../../assets/LOGO_APP_2.png")}
+      />
       <CustomSelect
         control={control}
         name="nacionalidad"
-        rules={{ required: "Este campo es requerido" }}
+        rules={{ required: "Este campo es requerido." }}
         items={[
           { label: "Venezolano (V)", value: "V" },
           { label: "Extranjero (E)", value: "E" },
@@ -47,20 +49,20 @@ const LoginScreen = () => {
       <CustomInput
         name="cedula"
         control={control}
-        placeholder={"Cedula"}
+        placeholder={"Cédula de Identidad"}
         rules={{
-          required: "La cedula es requerida.",
+          required: "La cédula es requerida.",
           minLength: {
             value: 1,
-            message: "La cedula debe tener maximo 9 caracteres.",
+            message: "La cédula debe tener máximo 9 caracteres.",
           },
           maxLength: {
             value: 9,
-            message: "La cedula debe tener maximo 9 caracteres.",
+            message: "La cédula debe tener máximo 9 caracteres.",
           },
           pattern: {
             value: cedulaRegex,
-            message: "Solo se admiten numeros en este campo.",
+            message: "Solo se admiten números en este campo.",
           },
         }}
       />
@@ -73,16 +75,17 @@ const LoginScreen = () => {
           required: "La contraseña es requerida.",
           minLength: {
             value: 8,
-            message: "La contraseña debe tener almenos 8 caracteres.",
+            message: "La contraseña debe tener al menos 8 caracteres.",
           },
           maxLength: {
             value: 32,
-            message: "La contraseña debe tener maximo 32 caracteres.",
+            message: "La contraseña debe tener máximo 32 caracteres.",
           },
         }}
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <CustomButton text="Iniciar Sesión" onPress={handleSubmit(onSubmit)} />
+      <Link style={styles.link} to={{ screen: "RecoveryScreen" }}>Recuperar Contraseña</Link>
     </View>
   );
 };
@@ -119,6 +122,15 @@ const styles = StyleSheet.create({
     color: "red",
     marginBottom: 10,
   },
+  logo: {
+    width: 200,
+    height: 200,
+    marginBottom: 10,
+  },
+  link:{
+    marginTop: 10,
+    color: "blue",
+  }
 });
 
 export default LoginScreen;

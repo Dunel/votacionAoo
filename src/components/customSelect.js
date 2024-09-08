@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Controller } from 'react-hook-form';
 import { Picker } from '@react-native-picker/picker';
 
-const CustomSelect = ({ control, name, rules = {}, items, placeholder }) => {
+const CustomSelect = ({ control, name, rules = {}, items, placeholder, onStateChange = () => {} }) => {
   return (
     <Controller
       control={control}
@@ -14,7 +14,10 @@ const CustomSelect = ({ control, name, rules = {}, items, placeholder }) => {
           <View style={[styles.container, { borderColor: error ? 'red' : '#e8e8e8' }]}>
             <Picker
               selectedValue={value}
-              onValueChange={(itemValue) => onChange(itemValue)}
+              onValueChange={(itemValue) => {
+                onChange(itemValue);
+                onStateChange(itemValue);
+              }}
               onBlur={onBlur}
               style={styles.picker}
             >
@@ -39,7 +42,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 5,
     paddingHorizontal: 10,
-    marginVertical: 5,
+    marginVertical: 1,
   },
   picker: {
     height: 45,
